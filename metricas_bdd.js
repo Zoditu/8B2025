@@ -13,7 +13,7 @@ const sleep = require('./utils/sleep');
     const dropMysql = new Process("mysql"); 
     dropMysql.ProcessArguments.push("-uroot");
     dropMysql.ProcessArguments.push("--password=utt");
-    await sleep(3);
+    //await sleep(3);
     dropMysql.Execute();
     dropMysql.Write("drop database Alumnos;");
     dropMysql.Write("create database Alumnos;");
