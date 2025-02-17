@@ -13,9 +13,7 @@ class Process {
         this.outs = "";
         this.start_time = null;
         this.end_time = null;
-        this.finish = function(callback) {
-            callback();
-        }
+        this.finish = false;
     }
 
     //getters
@@ -127,11 +125,18 @@ class Process {
             this.outs += text;
         });
         
-        this.process.stdout.on("close", (code) => {
+        /*this.process.stdout.on("close", (code) => {
             this.exit_code = code.toString();
             this.outs += code.toString();
             this.end_time = Date.now();
             this.finish();
+        });*/
+
+        this.process.on('close', (code) => {
+            this.exit_code = code.toString();
+            this.outs += code.toString();
+            this.end_time = Date.now();
+            this.finish = true;
         });
         
         this.process.on("error", (err) => {
@@ -169,10 +174,16 @@ class Process {
         this.process.stdin.end();
     }
 
-    Finish(cb) {
-        this.finish = function() {
-            cb();
-        }
+    async Finish() {
+        const self = this;
+        return new Promise((resolve, reject) => {
+            const loop = setInterval(() => {
+                if(self.finish === true) {
+                    clearInterval(loop);
+                    resolve(true);
+                }
+            }, 100);
+        });
     }
 }
 

@@ -29,8 +29,7 @@ mysql.Finish(() => {
 
 const mongo = new Process("mongosh");
 mongo.Options = {
-    shell: true,
-    detached: false
+    shell: true
 };
 
 mongo.Execute();
