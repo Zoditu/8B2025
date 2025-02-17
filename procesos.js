@@ -46,16 +46,23 @@ mongo.Finish(() => {
     //console.log(`[mongo] Log:`);
     //console.log(`${mongo.Logs}`);
     console.log(`[mongo] Tiempo total: ${mongo.EndTime - mongo.StartTime}`);
+    generarReporte(metricas);
 });
 
-function generarReporte() {
+function generarReporte(metricas) {
 
-    const grafico = {
+    const grafico_mysql = {
         type: "bar",
-        labels: `['MySQL', 'Mongo']`,
-        data: `[${tiempoMysql}, ${tiempoMongo}]`,
-        title: "Tiempo de ejecución de BDD"
+        labels: `['Export', 'Drop', 'Import']`,
+        data: `[${metricas.mysql.export}, ${metricas.mysql.drop}, ${metricas.mysql.import}]`,
+        title: "Pruebas de rendimiento de MySQL"
+    }
 
+    const grafico_mongo = {
+        type: "bar",
+        labels: `['Export', 'Drop', 'Import']`,
+        data: `[${metricas.mongo.export}, ${metricas.mongo.drop}, ${metricas.mongo.import}]`,
+        title: "Pruebas de rendimiento de Mongo"
     }
 
     const reporte = 
@@ -70,19 +77,42 @@ function generarReporte() {
     </head>
     <body>
         <div>
-            <canvas id="grafico"></canvas>
+            <canvas id="grafico-mysql"></canvas>
+            <hr>
+            <canvas id="grafico-mongo"></canvas>
+
         </div>
 
         <script>
-            const ctx = document.getElementById('grafico');
+            const mysql = document.getElementById('grafico-mysql');
+            const mongo = document.getElementById('grafico-mongo');
 
             new Chart(ctx, {
-                type: '${grafico.type}',
+                type: '${grafico_mysql.type}',
                 data: {
-                labels: ${grafico.labels},
+                labels: ${grafico_mysql.labels},
                 datasets: [{
-                    label: '${grafico.title}',
-                    data: ${grafico.data},
+                    label: '${grafico_mysql.title}',
+                    data: ${grafico_mysql.data},
+                    borderWidth: 1
+                }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(ctx, {
+                type: '${grafico_mongo.type}',
+                data: {
+                labels: ${grafico_mongo.labels},
+                datasets: [{
+                    label: '${grafico_mongo.title}',
+                    data: ${grafico_mongo.data},
                     borderWidth: 1
                 }]
                 },
