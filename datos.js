@@ -15,7 +15,22 @@ function random_text(characters_num) {
     return text;
 }
 
-async function insert(threads, repeticiones) {
+function generate_data(size) {
+    let csv = "";
+    for (let i = 0; i < size; i++) {
+        const matricula = Math.random().toFixed(7).toString().replace('.', '');
+        const año = Math.random().toFixed(3).toString().replace('.', '');
+        const nombre = random_text(random_number(5, 20));
+        const apellidos = random_text(random_number(10, 40));
+        const password = random_text(random_number(8, 16));
+
+        csv += `${matricula},${año},${nombre},${apellidos},${password}\n`        
+    }
+
+    return csv;
+}
+
+async function mysql_insert(threads, repeticiones) {
     let count = threads;
     return new Promise(async (resolve, reject) => {
         for(let p = 0; p < threads; p++) {
@@ -50,6 +65,46 @@ async function insert(threads, repeticiones) {
     });
 }
 
+async function mongo_insert(threads, repeticiones) {
+    let count = threads;
+    return new Promise(async (resolve, reject) => {
+        for(let p = 0; p < threads; p++) {
+            (async () => {
+                const mongo = new Process("mongosh", {
+                    shell: true
+                });
+                mongo.Execute();
+                mongo.Write("use Alumnos;");
+                mongo.Write('\n');
+        
+                for(let i = 0; i < repeticiones; i++) {
+                    const matricula = Math.random().toFixed(7).toString().replace('.', '');
+                    const año = Math.random().toFixed(3).toString().replace('.', '');
+                    const nombre = random_text(random_number(5, 20));
+                    const apellidos = random_text(random_number(10, 40));
+                    const password = random_text(random_number(8, 16));
+                    const insert = `db.Alumno.insertOne({matricula: '${matricula}', año: ${año}, nombre: '${nombre}', apellidos: '${apellidos}', password: '${password}'})`;
+                    await mongo.Write(insert);
+                    await mongo.Write('\n');
+                }
+                
+                await mongo.End();
+                await mongo.Finish();
+                count--;
+                if(count === 0) {
+                    resolve(true);
+                }
+            })();
+        }
+    });
+}
+
 (async () => {
-    await insert(100, 10000);
+    //await mysql_insert(100, 10000);
+    /*for(let i = 0; i < 1000; i++) {
+        await mongo_insert(100, 100);
+    }*/
+   const FileStream = require('fs');
+   const NUM = 1000000;
+   FileStream.writeFileSync("C:\\tmp\\datos_generados.csv", generate_data(NUM));
 })();
