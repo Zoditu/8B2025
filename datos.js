@@ -101,10 +101,16 @@ async function mongo_insert(threads, repeticiones) {
 
 (async () => {
     //await mysql_insert(100, 10000);
-    /*for(let i = 0; i < 1000; i++) {
-        await mongo_insert(100, 100);
-    }*/
+    //for(let i = 0; i < 1000; i++) {
+        //let inicio = Date.now();
+        //await mysql_insert(50, 300);
+        //await mongo_insert(50, 300);
+        //let fin = Date.now();
+        //console.log(`Tiempo total: ${(fin - inicio) / 1000} segundos`);
+    //}
+   
    const FileStream = require('fs');
    const NUM = 1000000;
    FileStream.writeFileSync("C:\\tmp\\datos_generados.csv", generate_data(NUM));
+   
 })();
